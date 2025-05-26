@@ -1,13 +1,15 @@
 import express from 'express';
 import dotenv from 'dotenv';
+import { connectDB } from './db/db';
+import authRouter from './routes/authRouter';
 
 const app = express();
-app.use(express.json());
-dotenv.config();
 
-app.get('/', (_req, res) => {
-  res.send({ message: 'API rodando!' });
-});
+dotenv.config();
+connectDB();
+
+app.use(express.json());
+app.use("/api/auth", authRouter)
 
 const PORT = process.env.PORT || 3333;
 app.listen(PORT, () => {
