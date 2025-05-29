@@ -1,8 +1,10 @@
 import { Router } from "express";
-import { createUser } from "../controllers/authController";
+import { signup } from "../controllers/authController";
+import { validateRequest } from "../middlewares/validateRequest";
+import { createUserSchema } from "../db/schemas/userSchema";
 
 const router = Router();
 
-router.post("/", createUser);
+router.post("/signup", validateRequest(createUserSchema), signup);
 
 export default router;
