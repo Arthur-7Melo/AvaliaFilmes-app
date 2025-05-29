@@ -1,7 +1,10 @@
 import { User } from "../models/User";
-import { ConflictError } from "../utils/customError";
+import { BadRequestError, ConflictError, NotFoundError } from "../utils/customError";
 import { toUserResponse, UserResponse } from "../utils/responses/userResponse";
 import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
+import { sendEmailResetPassword } from "./emailService";
 
 export const createUser = async (name: string, email: string, password: string):
   Promise<UserResponse> => {
@@ -18,3 +21,23 @@ export const createUser = async (name: string, email: string, password: string):
 
   return toUserResponse(user);
 }
+
+export const login = async (email: string, password: string) => {
+  const user = await User.findOne({ email: email });
+  if (!user) {
+    throw new NotFoundError("Usuário não encontrado")
+  }
+
+  const isMatch = await bcrypt.compare(password, user.password);
+  if (!isMatch) {
+    throw new BadRequestError("Senha incorreta")
+  }
+
+  const token = jwt.sign(
+    { id: user._id, name: user.name },
+    process.env.JWT_SECRET!,
+    { expiresIn: "1d" }
+  )
+  return token;
+}
+
