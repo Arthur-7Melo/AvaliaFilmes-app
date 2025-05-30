@@ -41,3 +41,16 @@ export const login = async (email: string, password: string) => {
   return token;
 }
 
+export const forgotPassword = async (email: string) => {
+  const user = await User.findOne({ email: email });
+  if (!user) {
+    throw new NotFoundError("Usuário não encontrado")
+  }
+
+  const resetToken = crypto.randomBytes(32).toString('hex');
+  user.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+  user.resetPasswordExpires = new Date(Date.now() + 3600000);
+
+  await user.save();
+  await sendEmailResetPassword(user.email, resetToken);
+}

@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
-import { createUser, login } from "../services/authService";
-import { CreateUserInput, SignInInput } from "../db/schemas/userSchema";
+import { createUser, forgotPassword, login } from "../services/authService";
+import { CreateUserInput, ForgotPasswordInput, SignInInput } from "../db/schemas/userSchema";
 import { BadRequestError, ConflictError, NotFoundError } from "../utils/customError";
 
 export const signup = async (req: Request, res: Response) => {
@@ -48,3 +48,28 @@ export const signin = async (req: Request, res: Response) => {
     }
   }
 };
+
+export const forgotPasswordHandler = async (req: Request, res: Response) => {
+  try {
+    const { email }: ForgotPasswordInput = req.body;
+    await forgotPassword(email);
+    console.log(`Email enviado para o user: ${email}`);
+    res.status(200).json({
+      success: true,
+      message: "Email enviado com sucesso"
+    });
+  } catch (error) {
+    if (error instanceof NotFoundError) {
+      res.status(error.statusCode).json({
+        success: false,
+        message: error.message
+      });
+    } else {
+      console.log(error);
+      res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor"
+      });
+    }
+  }
+}
