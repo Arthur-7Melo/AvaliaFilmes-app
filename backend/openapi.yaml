@@ -1,0 +1,302 @@
+openapi: 3.0.0
+info:
+  title: API de Avaliação de Filmes
+  version: 1.0.0
+  description: |
+    Documentação dos endpoints disponíveis:
+    - `/api/auth/signup`
+    - `/api/auth/signin`
+    - `/api/auth/forgot`
+    - `/api/auth/reset/{token}`
+
+servers:
+  - url: http://localhost:3333
+    description: Servidor local
+
+paths:
+  /api/auth/signup:
+    post:
+      summary: Registra um novo usuário
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateUserInput'
+      responses:
+        '201':
+          description: Usuário criado com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  user:
+                    type: object
+        '409':
+          description: Usuário já possui cadastro
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Usuário já possui cadastro"
+        '500':
+          description: Erro inesperado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Erro ao criar user"
+
+  /api/auth/signin:
+    post:
+      summary: Faz login e retorna token JWT
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignInInput'
+      responses:
+        '200':
+          description: Autenticação bem-sucedida
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  token:
+                    type: string
+        '404':
+          description: Usuário não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Usuário não encontrado"
+        '400':
+          description: Credenciais inválidas
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Senha incorreta"
+        '500':
+          description: Erro inesperado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Erro interno do servidor"
+                    
+
+  /api/auth/forgot-password:
+    post:
+      summary: Solicita recuperação de senha (envia e-mail com token)
+      tags:
+        - Auth
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ForgotPasswordInput'
+      responses:
+        '200':
+          description: E-mail de recuperação enviado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Email enviado com sucesso"
+        '404':
+          description: Usuário não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Usuário não encontrado"
+        '500':
+          description: Erro inesperado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Erro interno do servidor"
+
+  /api/auth/reset-password/{token}:
+    post:
+      summary: Reseta a senha usando token válido
+      tags:
+        - Auth
+      parameters:
+        - in: path
+          name: token
+          required: true
+          schema:
+            type: string
+          description: Token recebido por e-mail
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResetPasswordInput'
+      responses:
+        '200':
+          description: Senha alterada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: "Senha alterada com sucesso"
+        '400':
+          description: Token inválido ou expirado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Token não encontrado ou inválido"
+        '500':
+          description: Erro inesperado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Erro interno do servidor"
+
+components:
+  schemas:
+    CreateUserInput:
+      type: object
+      required:
+        - name
+        - email
+        - password
+      properties:
+        name:
+          type: string
+          minLength: 2
+          example: João Silva
+        email:
+          type: string
+          format: email
+          example: joao@exemplo.com
+        password:
+          type: string
+          minLength: 8
+          format: password
+          example: senha123
+
+    SignInInput:
+      type: object
+      required:
+        - email
+        - password
+      properties:
+        email:
+          type: string
+          format: email
+          example: joao@exemplo.com
+        password:
+          type: string
+          minLength: 8
+          format: password
+          example: senha123
+
+    ForgotPasswordInput:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+          format: email
+          example: joao@exemplo.com
+
+    ResetPasswordInput:
+      type: object
+      required:
+        - password
+      properties:
+        password:
+          type: string
+          minLength: 8
+          format: password
+          example: novaSenha123
