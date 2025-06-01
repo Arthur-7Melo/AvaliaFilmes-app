@@ -54,3 +54,21 @@ export const forgotPassword = async (email: string) => {
   await user.save();
   await sendEmailResetPassword(user.email, resetToken);
 }
+
+export const resetPassword = async (token: string, newPassword: string) => {
+  const hashedToken = crypto.createHash('sha256').update(token).digest('hex');
+
+  const user = await User.findOne({
+    resetPasswordToken: hashedToken,
+    resetPasswordExpires: { $gt: new Date() }
+  });
+
+  if (!user) {
+    throw new BadRequestError("Token não encontrado ou inválido")
+  }
+
+  user.password = await bcrypt.hash(newPassword, 10);
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpires = undefined;
+  await user.save();
+}
