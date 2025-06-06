@@ -36,6 +36,9 @@ export const discoverMovies = async ({
 
 export const getMovieDetails = async (movieId: number) => {
   const response = await tmdb.get(`/movie/${movieId}`);
+  if (response?.status === 404) {
+    throw new NotFoundError("Filme não encontrado")
+  }
   return response.data;
 }
 
