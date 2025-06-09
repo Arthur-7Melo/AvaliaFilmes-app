@@ -6,8 +6,12 @@ info:
     Documentação dos endpoints disponíveis:
     - `/api/auth/signup`
     - `/api/auth/signin`
-    - `/api/auth/forgot`
-    - `/api/auth/reset/{token}`
+    - `/api/auth/forgot-password`
+    - `/api/auth/reset-password/{token}`
+    - `/api/v1/movies/genres`
+    - `/api/v1/movies/discover`
+    - `/api/v1/movies/{id}`
+    - `/api/v1/movies/search`
 
 servers:
   - url: http://localhost:3333
@@ -241,6 +245,190 @@ paths:
                     type: string
                     example: "Erro interno do servidor"
 
+  /api/v1/movies/genres:
+    get:
+      summary: Lista gêneros de filmes (TMDb)
+      tags:
+        - Movies
+      responses:
+        '200':
+          description: Lista de gêneros retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  genres:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Genre'
+        '500':
+          description: Erro interno ao buscar gêneros
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Erro ao buscar gêneros"
+
+  /api/v1/movies/discover:
+    get:
+      summary: Descobre filmes por gênero e/ou ano
+      tags:
+        - Movies
+      parameters:
+        - in: query
+          name: genre
+          schema:
+            type: integer
+          description: ID do gênero (opcional)
+        - in: query
+          name: year
+          schema:
+            type: integer
+          description: Ano de lançamento (opcional)
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Página de resultados (opcional
+      responses:
+        '200':
+          description: Lista de filmes retornada com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  genres:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MovieResponse'
+        '500':
+          description: Erro interno ao buscar filmes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Erro ao buscar filmes"
+
+  /api/v1/movies/{id}:
+    get:
+      summary: Retorna detalhes de um filme específico
+      tags:
+        - Movies
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+          description: ID do filme no TMDb
+      responses:
+        '200':
+          description: Detalhes do filme retornados com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  movie:
+                    $ref: '#/components/schemas/MovieResponse'
+        '404':
+          description: Filme não encontrado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Filme não encontrado"
+        '500':
+          description: Erro interno ao obter detalhes do filme
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Erro interno do servidor"
+
+  /api/v1/movies/search:
+    get:
+      summary: Busca filmes por texto
+      tags:
+        - Movies
+      parameters:
+        - in: query
+          name: query
+          required: true
+          schema:
+            type: string
+          description: Termo de busca
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Página de resultados (opcional)
+      responses:
+        '200':
+          description: Resultados da pesquisa retornados com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  movies:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MovieResponse'
+        '500':
+          description: Erro interno ao buscar filmes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Erro interno do servidor ao buscar filmes"
+
 components:
   schemas:
     CreateUserInput:
@@ -300,3 +488,53 @@ components:
           minLength: 8
           format: password
           example: novaSenha123
+
+    Genre:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 28
+        name:
+          type: string
+          example: Ação
+
+    MovieResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 550
+        title:
+          type: string
+          example: Clube da Luta
+        overview:
+          type: string
+          example: Um narrador insone encontra Tyler Durden...
+        posterUrl:
+          type: string
+          nullable: true
+          example: https://image.tmdb.org/t/p/w500/a26cQPRhJPX6GbWfQbvZdrrp9j9.jpg
+        backdropUrl:
+          type: string
+          nullable: true
+          example: https://image.tmdb.org/t/p/w500/path/to/backdrop.jpg
+        genres:
+          type: array
+          items:
+            type: string
+            example: Drama
+        releaseDate:
+          type: string
+          example: 1999-10-15
+        runtime:
+          type: integer
+          nullable: true
+          example: 139
+
+
+
+
+
+
+
