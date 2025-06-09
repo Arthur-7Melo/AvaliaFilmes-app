@@ -42,10 +42,10 @@ export const movieDetailsHandler = async (req: Request, res: Response) => {
   try {
     const movieId = Number(req.params.id);
     const data = await getMovieDetails(movieId);
-    const movies: MovieResponse = tomovieResponse(data);
+    const movie: MovieResponse = tomovieResponse(data);
     res.status(200).json({
       success: true,
-      movies
+      movie
     })
   } catch (error: any) {
     if (error.response?.status === 404) {
@@ -76,7 +76,7 @@ export const searchMovieHandler = async (req: Request, res: Response) => {
   } catch (error) {
     res.status(500).json({
       success: false,
-      error: "Erro interno do servidor ao buscar filmes"
+      message: "Erro interno do servidor ao buscar filmes"
     })
   }
 };
