@@ -56,3 +56,11 @@ export const updateReview = async (reviewId: string, data: UpdateReviewInput) =>
 
   return review;
 }
+
+export const deleteReview = async (reviewId: string) => {
+  const review = Review.findById(reviewId);
+  if (!review) {
+    throw new NotFoundError("Review não encontrado");
+  }
+  await review.deleteOne();
+}

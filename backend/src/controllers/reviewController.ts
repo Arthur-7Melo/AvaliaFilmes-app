@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthRequest } from "../middlewares/authMiddleware";
-import { createReview, getReviewsByMovie, updateReview } from "../services/reviewService";
+import { createReview, deleteReview, getReviewsByMovie, updateReview } from "../services/reviewService";
 import { CreateReviewInput, UpdateReviewInput } from "../db/schemas/reviewSchema";
 
 export const createReviewHandler = async (
@@ -56,6 +56,23 @@ export const updateReviewHandler = async (
       success: true,
       review
     });
+  } catch (error) {
+    next(error);
+  }
+}
+
+export const deleteReviewHandler = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const reviewId = req.params.id;
+    await deleteReview(reviewId);
+    res.status(200).json({
+      success: true,
+      message: "Review excluído"
+    })
   } catch (error) {
     next(error);
   }
