@@ -2,6 +2,11 @@ import { UpdateReviewInput } from "../db/schemas/reviewSchema";
 import { Review, IReview } from "../models/Review";
 import { BadRequestError, NotFoundError } from "../utils/customError";
 
+export interface RatingStats {
+  average: number;
+  count: number;
+}
+
 export const createReview = async (
   movieId: number,
   userId: string,
@@ -63,4 +68,30 @@ export const deleteReview = async (reviewId: string) => {
     throw new NotFoundError("Review não encontrado");
   }
   await review.deleteOne();
+}
+
+export const getRatingStats = async (movieId: number): Promise<RatingStats> => {
+  if (!Number.isInteger(movieId) || movieId <= 0) {
+    throw new BadRequestError("Id do filme é inválido");
+  }
+
+  const result = await Review.aggregate<RatingStats>([
+    { $match: { movieId } },
+    {
+      $group: {
+        _id: null,
+        average: { $avg: "$rating" },
+        count: { $sum: 1 },
+      },
+    },
+  ]);
+
+  if (result.length === 0) {
+    return {
+      average: 0,
+      count: 0
+    }
+  }
+  const { average, count } = result[0];
+  return { average, count };
 }

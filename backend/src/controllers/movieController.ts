@@ -1,6 +1,8 @@
-import { Request, Response } from "express";
+import e, { Request, Response } from "express";
 import { discoverMovies, getGenres, getMovieDetails, searchMovie } from "../services/tmdbService";
 import { MovieResponse, tomovieResponse } from "../utils/responses/movieResponse";
+import { getRatingStats } from "../services/reviewService";
+import { BadRequestError } from "../utils/customError";
 
 export const getGenresHandler = async (req: Request, res: Response) => {
   try {
@@ -80,3 +82,26 @@ export const searchMovieHandler = async (req: Request, res: Response) => {
     })
   }
 };
+
+export const getRatingStatsHandler = async (req: Request, res: Response) => {
+  try {
+    const movieId = Number(req.params.id);
+    const stats = await getRatingStats(movieId);
+    res.status(200).json({
+      success: true,
+      stats
+    })
+  } catch (error) {
+    if (error instanceof BadRequestError) {
+      res.status(error.statusCode).json({
+        success: false,
+        message: error.message
+      })
+    } else {
+      res.status(500).json({
+        success: false,
+        message: "Erro interno do servidor"
+      });
+    }
+  }
+}
