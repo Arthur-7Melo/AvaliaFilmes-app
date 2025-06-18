@@ -12,6 +12,7 @@ info:
     - `/api/v1/movies/discover`
     - `/api/v1/movies/{id}`
     - `/api/v1/movies/search`
+    - `/api/v1/movies/{id}/ratings`
     - `/api/v1/:movieId/reviews`
     - `/api/v1/reviews/:id`
 
@@ -430,6 +431,57 @@ paths:
                   message:
                     type: string
                     example: "Erro interno do servidor ao buscar filmes"
+  /api/v1/movies/{id}/ratings:
+    get:
+      summary: Obtém média e quantidade de avaliações de um filme
+      tags:
+        - Movies
+      parameters:
+        - in: path
+          name: movieId
+          required: true
+          schema:
+            type: integer
+          description: ID do filme no TMDb
+      responses:
+        '200':
+          description: Estatísticas de rating retornadas com sucesso
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  stats:
+                    $ref: '#/components/schemas/RatingStats'
+        '400':
+          description: movieId inválido
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Id do filme é inválido"
+        '500':
+          description: Erro interno do servidor
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Erro interno do servidor"
 
                 
   /api/v1/{movieId}/reviews:
@@ -790,6 +842,19 @@ components:
           minLength: 8
           format: password
           example: novaSenha123
+
+    RatingStats:
+      type: object
+      properties:
+        average:
+          type: number
+          format: float
+          description: Média das notas dos usuários
+          example: 4.25
+        count:
+          type: integer
+          description: Quantidade total de avaliações
+          example: 12
 
     CreateReviewInput:
       type: object
