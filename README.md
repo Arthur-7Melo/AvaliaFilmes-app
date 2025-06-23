@@ -15,6 +15,7 @@
 - [Instalação](#-instalação)  
 - [Variáveis de Ambiente](#-variáveis-de-ambiente)  
 - [Rodando a API](#-rodando-a-api)  
+- [Usando Docker](#-usando-docker)
 - [Documentação Swagger](#-documentação-swagger)  
 - [Testes](#-testes)    
 - [Licença](#-licença)  
@@ -72,6 +73,18 @@ npm run build
 npm start
 ```
 Servidor rodando em `http://localhost:3333`
+
+## 🐳 Usando Docker
+Suba tudo com um único comando:
+
+```bash
+docker-compose up --build
+```
+
+Quando quiser derrubar os containers:
+```bash
+docker-compose down
+```
 
 ## 📄 Documentação Swagger
 Depois de iniciar a API, abra:
