@@ -7,7 +7,6 @@ import { theme } from './theme.js'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
     <ThemeProvider theme={theme}>
       <App />
     </ThemeProvider>
