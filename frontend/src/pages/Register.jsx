@@ -65,7 +65,7 @@ export default function SignupPage() {
 
   return (
     <div className="min-h-screen flex">
-      <div className="hidden md:flex w-1/2 bg-gradient-to-tr from-indigo-400 to-purple-500 items-center justify-center p-8">
+      <div className="hidden md:flex w-1/2 bg-gradient-to-tr from-indigo-400 to-purple-300 items-center justify-center p-8">
         <img
           src={RateSVG}
           alt="Ilustração de avaliação"
@@ -210,6 +210,23 @@ export default function SignupPage() {
             </Button>
           </form>
         </Paper>
+
+        <Box mt={2} textAlign="center">
+          <Typography variant="body2" color="textSecondary">
+            Já tem uma conta?{' '}
+            <span
+              onClick={() => navigate('/login')}
+              style={{
+                color: '#4F46E5',
+                fontWeight: 500,
+                cursor: 'pointer',
+                textDecoration: 'none'
+              }}
+            >
+              Faça Login
+            </span>
+          </Typography>
+        </Box>
       </div>
     </div>
   );

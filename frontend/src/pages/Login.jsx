@@ -135,6 +135,23 @@ export default function LoginPage() {
             </Button>
           </form>
         </Paper>
+
+        <Box mt={2} textAlign="center">
+          <Typography variant="body2" color="textSecondary">
+            Não tem uma conta?{' '}
+            <span
+              onClick={() => navigate('/signup')}
+              style={{
+                color: '#4F46E5',
+                fontWeight: 500,
+                cursor: 'pointer',
+                textDecoration: 'none'
+              }}
+            >
+              Cadastre-se aqui
+            </span>
+          </Typography>
+        </Box>
       </div>
     </div>
   )
