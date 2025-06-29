@@ -1,14 +1,14 @@
 export const resetPasswordTemplate = (resetUrl: string) => {
   return `
-    <div style="font-family: Arial, sans-serif; color: #333333; line-height: 1.5;">
-      <h1 style="color:rgb(212, 210, 214); margin-bottom: 0.5em;">Redefinição de Senha</h1>
+    <div style="font-family: Arial, sans-serif; color: #333333; line-height: 1.5;  max-width: 500px;">
+      <h1 style="color: #4F46E5; margin-bottom: 0.5em;">Redefinição de Senha</h1>
       <p>Olá,</p>
       <p>Você solicitou uma redefinição de senha. Para prosseguir, clique no link abaixo:</p>
       <p style="text-align: center; margin: 1.5em 0;">
         <a
           href="${resetUrl}"
           style="
-            background-color: rgb(212, 210, 214);
+            background-color: #4F46E5;
             color: #ffffff;
             padding: 12px 24px;
             text-decoration: none;
