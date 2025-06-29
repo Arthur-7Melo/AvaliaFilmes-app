@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import {
   TextField,
   Button,
@@ -8,20 +8,14 @@ import {
   Box,
   InputAdornment,
 } from "@mui/material";
-import {
-  Email as EmailIcon,
-  Lock as LockIcon,
-  Person as PersonIcon,
-} from "@mui/icons-material";
+import { Lock as LockIcon } from "@mui/icons-material";
 import Visibility from "@mui/icons-material/Visibility";
 import VisibilityOff from "@mui/icons-material/VisibilityOff";
-import { signUp } from "../services/authService";
 import RateSVG from "../assets/rate.svg";
+import { api } from "../services/api";
 
-export default function SignupPage() {
+export default function ResetPasswordPage() {
   const navigate = useNavigate();
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [error, setError] = useState("");
@@ -29,9 +23,17 @@ export default function SignupPage() {
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirm, setShowConfirm] = useState(false);
+  const { token = '' } = useParams();
 
   const togglePasswordVisibility = () => setShowPassword((v) => !v);
   const toggleConfirmVisibility = () => setShowConfirm((v) => !v);
+
+  useEffect(() => {
+    if (!token) {
+      setError("Token Inválido")
+      navigate('/login');
+    }
+  }, [token]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -42,26 +44,28 @@ export default function SignupPage() {
     }
     setLoading(true);
     try {
-      await signUp({ name, email, password });
-      setSuccess("Usuário criado com sucesso. Redirecionando para o login...")
+      const { data } = await api.post(`/auth/reset-password/${token}`, { password });
+      setSuccess("Senha atualizada com sucesso. Você pode fazer o login");
       setTimeout(() => {
         navigate('/login', {
           replace: true
         });
       }, 2000);
-    } catch (err) {
-      const payload = err.response?.data;
-      if (payload?.error?.length) {
-        setError(payload.error.map((e) => e.message).join(" | "));
-      } else if (payload?.message) {
-        setError(payload.message);
-      } else {
-        setError("Falha ao criar conta. Tente novamente.");
+    } catch (error) {
+      if (error.response?.data?.error?.length > 0) {
+        const zodMessages = error.response.data.error.map(err => err.message);
+        setError(zodMessages.join(' | '));
+      }
+      else if (error.response?.data?.message) {
+        setError(error.response.data.message);
+      }
+      else {
+        setError('Falha ao redefinir senha. Tente novamente.');
       }
     } finally {
       setLoading(false);
     }
-  };
+  }
 
   return (
     <div className="min-h-screen flex">
@@ -80,7 +84,7 @@ export default function SignupPage() {
             <span className="text-indigo-600 text-5xl font-bold">F</span>ilmes
           </Typography>
           <Typography variant="subtitle1" className="text-center text-gray-600">
-            Crie sua conta
+            Digite sua nova senha
           </Typography>
         </Box>
 
@@ -99,42 +103,6 @@ export default function SignupPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-4">
-            <TextField
-              label="Nome"
-              type="text"
-              fullWidth
-              required
-              size="small"
-              margin="normal"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <PersonIcon color="action" />
-                  </InputAdornment>
-                ),
-              }}
-            />
-
-            <TextField
-              label="Email"
-              type="email"
-              fullWidth
-              required
-              size="small"
-              margin="normal"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <EmailIcon color="action" />
-                  </InputAdornment>
-                ),
-              }}
-            />
-
             <TextField
               label="Senha"
               type={showPassword ? "text" : "password"}
@@ -206,28 +174,11 @@ export default function SignupPage() {
               disabled={loading}
               size="large"
             >
-              {loading ? "Criando..." : "Criar conta"}
+              {loading ? "Enviando..." : "Enviar"}
             </Button>
           </form>
         </Paper>
-
-        <Box mt={2} textAlign="center">
-          <Typography variant="body2" color="textSecondary">
-            Já tem uma conta?{' '}
-            <span
-              onClick={() => navigate('/login')}
-              style={{
-                color: '#4F46E5',
-                fontWeight: 500,
-                cursor: 'pointer',
-                textDecoration: 'none'
-              }}
-            >
-              Faça Login
-            </span>
-          </Typography>
-        </Box>
       </div>
     </div>
-  );
+  )
 }

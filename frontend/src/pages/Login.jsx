@@ -151,6 +151,21 @@ export default function LoginPage() {
               Cadastre-se aqui
             </span>
           </Typography>
+
+          <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+            Esqueceu sua senha?{' '}
+            <span
+              onClick={() => navigate('/forgot-password')}
+              style={{
+                color: '#4F46E5',
+                fontWeight: 500,
+                cursor: 'pointer',
+                textDecoration: 'none'
+              }}
+            >
+              Recuperar senha
+            </span>
+          </Typography>
         </Box>
       </div>
     </div>
