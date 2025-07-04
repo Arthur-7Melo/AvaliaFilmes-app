@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Container,
   Select,
@@ -21,6 +22,7 @@ export default function DiscoverPage() {
   const [genreId, setGenreId] = useState('');
   const [year, setYear] = useState('');
   const [page, setPage] = useState(1);
+  const navigate = useNavigate();
 
   const {
     data: movies = [],
@@ -98,7 +100,9 @@ export default function DiscoverPage() {
             }}
           >
             <Card
+              onClick={() => navigate(`/movie/${movie.id}`)}
               sx={{
+                cursor: 'pointer',
                 height: 360,
                 display: 'flex',
                 flexDirection: 'column',
