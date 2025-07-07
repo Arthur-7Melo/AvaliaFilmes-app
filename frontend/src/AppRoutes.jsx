@@ -6,6 +6,8 @@ import ForgotPasswordPage from './pages/ForgotPassword'
 import ResetPasswordPage from './pages/ResetPassword'
 import DiscoverPage from './pages/Discover'
 import MovieDetailPage from './pages/MovieDetailPage'
+import ReviewsPage from './pages/ReviewsPage'
+import ProtectedRoute from './components/ProtectedRoute'
 
 const AppRoutes = () => {
   return (
@@ -15,15 +17,21 @@ const AppRoutes = () => {
       <Route path="/forgot-password" element={<ForgotPasswordPage />} />
       <Route path="/reset-password/:token" element={<ResetPasswordPage />} />
       <Route path="/discover" element={<DiscoverPage />} />
-      <Route path='/movie/:id' element={<MovieDetailPage />} />
+
+      <Route path="/movies/:id" element={
+        <ProtectedRoute>
+          <MovieDetailPage />
+        </ProtectedRoute>
+      } />
+      <Route path="/movies/:id/reviews" element={
+        <ProtectedRoute>
+          <ReviewsPage />
+        </ProtectedRoute>
+      } />
 
       <Route
         path="*"
-        element={
-          localStorage.getItem('token')
-            ? <Navigate to="/" replace />
-            : <Navigate to="/discover" replace />
-        }
+        element={<DiscoverPage />}
       />
     </Routes>
   )

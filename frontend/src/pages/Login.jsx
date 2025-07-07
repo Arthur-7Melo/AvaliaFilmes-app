@@ -1,28 +1,32 @@
 import React, { useState } from "react";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { TextField, Button, Typography, Paper, Box, InputAdornment } from "@mui/material";
 import { Email as EmailIcon, Lock as LockIcon } from "@mui/icons-material";
 import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { signIn } from "../services/authService";
 import RateSVG from '../assets/rate.svg';
+import { useAuth } from "../contexts/AuthContext";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const from = location.state?.from?.pathname || '/discover';
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const { login } = useAuth();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
     setLoading(true);
     try {
-      const { data } = await signIn({ email, password });
-      localStorage.setItem('token', data.token);
-      navigate('/');
+      const token = await signIn({ email, password });
+      login(token);
+      navigate(from, { replace: true });
     } catch (error) {
       if (error.response?.data?.error?.length > 0) {
         const zodMessages = error.response.data.error.map(err => err.message);

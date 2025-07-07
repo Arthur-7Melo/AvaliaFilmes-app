@@ -100,7 +100,7 @@ export default function DiscoverPage() {
             }}
           >
             <Card
-              onClick={() => navigate(`/movie/${movie.id}`)}
+              onClick={() => navigate(`/movies/${movie.id}`)}
               sx={{
                 cursor: 'pointer',
                 height: 360,
