@@ -1,7 +1,9 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthRequest } from "../middlewares/authMiddleware";
-import { createReview, deleteReview, getReviewsByMovie, updateReview } from "../services/reviewService";
+import { createReview, deleteReview, getReviewsByMovie, getReviewsByUser, updateReview } from "../services/reviewService";
 import { CreateReviewInput, UpdateReviewInput } from "../db/schemas/reviewSchema";
+import { getMovieDetails } from "../services/tmdbService";
+import { tomovieResponse } from "../utils/responses/movieResponse";
 
 export const createReviewHandler = async (
   req: AuthRequest,
@@ -34,6 +36,42 @@ export const getReviewsByMovieHandler = async (
     res.status(200).json({
       success: true,
       reviews
+    })
+  } catch (error) {
+    next(error);
+  }
+}
+
+export const getReviewsByUserHandler = async (
+  req: AuthRequest,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const userId = req.user!.id;
+    const reviews = await getReviewsByUser(userId);
+
+    const enriched = await Promise.all(
+      reviews.map(async (r) => {
+        const rawMovie = await getMovieDetails(r.movieId);
+        const movie = tomovieResponse(rawMovie);
+
+        return {
+          _id: r._id,
+          rating: r.rating,
+          content: r.content,
+          createdAt: r.createdAt,
+          updatedAt: r.updatedAt,
+          movie: {
+            id: movie.id,
+            title: movie.title,
+          },
+        };
+      })
+    )
+    res.status(200).json({
+      success: true,
+      reviews: enriched
     })
   } catch (error) {
     next(error);

@@ -41,6 +41,12 @@ export const getReviewsByMovie = async (movieId: number): Promise<IReview[]> => 
     .populate("author", "name");
 }
 
+export const getReviewsByUser = async (userId: string): Promise<IReview[]> => {
+  return Review.find({ author: userId })
+    .sort({ createdAt: -1 })
+    .populate("author", "name")
+}
+
 export const updateReview = async (reviewId: string, data: UpdateReviewInput) => {
   const toSet: Partial<UpdateReviewInput> = {};
   if (data.rating !== undefined) {
