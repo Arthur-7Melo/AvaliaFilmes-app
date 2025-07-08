@@ -15,6 +15,7 @@ info:
     - `/api/v1/movies/{id}/ratings`
     - `/api/v1/:movieId/reviews`
     - `/api/v1/reviews/:id`
+    - `/api/v1/me/reviews`
 
 servers:
   - url: http://localhost:3333
@@ -783,6 +784,55 @@ paths:
                     type: string
                     example: "Erro interno do servidor"
 
+  /api/v1/me/reviews:
+    get:
+      summary: Lista as reviews do usuário autenticado
+      tags:
+        - Reviews
+      security:
+        - bearerAuth: []  
+      responses:
+        '200':
+          description: Lista de avaliações do usuário
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  reviews:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserReview'
+        '401':
+          description: Não autenticado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Token inválido"
+        '500':
+          description: Erro interno
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: "Erro interno do servidor"
+
 components:
   schemas:
     CreateUserInput:
@@ -953,6 +1003,43 @@ components:
           format: date-time
           example: "2025-06-15T12:34:56.789Z"
 
+    UserReview:
+      type: object
+      properties:
+        _id:
+          type: string
+          description: ID da review (MongoDB ObjectId)
+          example: "60d21b4667d0d8992e610c85"
+        rating:
+          type: integer
+          description: Nota dada à revisão
+          example: 4
+        content:
+          type: string
+          description: Texto da revisão
+          example: "Ótimo filme, recomendo!"
+        createdAt:
+          type: string
+          format: date-time
+          description: Data de criação da review
+          example: "2025-06-23T18:25:43.511Z"
+        updatedAt:
+          type: string
+          format: date-time
+          description: Data da última atualização da review
+          example: "2025-06-24T10:12:17.123Z"
+        movie:
+          type: object
+          description: Informações básicas do filme avaliado
+          properties:
+            id:
+              type: integer
+              description: ID do filme no TMDb
+              example: 550
+            title:
+              type: string
+              description: Título do filme
+              example: "Fight Club"
 
 
 
