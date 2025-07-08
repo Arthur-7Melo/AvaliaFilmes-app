@@ -1,11 +1,14 @@
 import React from 'react'
-import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material'
+import { AppBar, Toolbar, Typography, Button, Box, useTheme, useMediaQuery } from '@mui/material'
+import { Link as RouterLink } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 
 export default function NavBar() {
   const { user, logout } = useAuth()
-  if (!user) return null
+  const theme = useTheme()
+  const isSmall = useMediaQuery(theme.breakpoints.down('sm'))
 
+  if (!user) return null
   return (
     <AppBar
       position="static"
@@ -48,16 +51,34 @@ export default function NavBar() {
         </Typography>
 
         <Box display="flex" alignItems="center" gap={2}>
-          <Typography variant="body1">
+          <Typography variant="body1" sx={{ ml: 2 }}>
             Olá, <strong>{user.name}</strong>
           </Typography>
+
+          <Button
+            component={RouterLink}
+            to="/me/reviews"
+            variant="outlined"
+            size="small"
+            sx={{
+              color: 'common.white',
+              borderColor: 'common.white',
+              '&:hover': {
+                bgcolor: 'primary.light',
+                borderColor: 'primary.light',
+              },
+            }}
+          >
+            Minhas Avaliações
+          </Button>
+
           <Button
             variant="outlined"
             size="small"
             onClick={logout}
             sx={{
-              borderColor: 'common.white',
               color: 'common.white',
+              borderColor: 'common.white',
               '&:hover': {
                 bgcolor: 'primary.light',
                 borderColor: 'primary.light',

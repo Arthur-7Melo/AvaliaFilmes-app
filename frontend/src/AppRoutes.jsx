@@ -8,6 +8,7 @@ import DiscoverPage from './pages/Discover'
 import MovieDetailPage from './pages/MovieDetailPage'
 import ReviewsPage from './pages/ReviewsPage'
 import ProtectedRoute from './components/ProtectedRoute'
+import UserReviewsPage from './pages/UserReviewsPage'
 
 const AppRoutes = () => {
   return (
@@ -26,6 +27,11 @@ const AppRoutes = () => {
       <Route path="/movies/:id/reviews" element={
         <ProtectedRoute>
           <ReviewsPage />
+        </ProtectedRoute>
+      } />
+      <Route path="/me/reviews" element={
+        <ProtectedRoute>
+          <UserReviewsPage />
         </ProtectedRoute>
       } />
 
