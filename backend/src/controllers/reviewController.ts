@@ -53,30 +53,44 @@ export const getReviewsByUserHandler = async (
 
     const enriched = await Promise.all(
       reviews.map(async (r) => {
-        const rawMovie = await getMovieDetails(r.movieId);
-        const movie = tomovieResponse(rawMovie);
-
-        return {
-          _id: r._id,
-          rating: r.rating,
-          content: r.content,
-          createdAt: r.createdAt,
-          updatedAt: r.updatedAt,
-          movie: {
-            id: movie.id,
-            title: movie.title,
-          },
-        };
+        try {
+          const rawMovie = await getMovieDetails(r.movieId);
+          const movie = tomovieResponse(rawMovie);
+          return {
+            _id: r._id,
+            rating: r.rating,
+            content: r.content,
+            createdAt: r.createdAt,
+            updatedAt: r.updatedAt,
+            movie: {
+              id: movie.id,
+              title: movie.title,
+            },
+          };
+        } catch (err: any) {
+          return {
+            _id: r._id,
+            rating: r.rating,
+            content: r.content,
+            createdAt: r.createdAt,
+            updatedAt: r.updatedAt,
+            movie: {
+              id: r.movieId,
+              title: "Título indisponível",
+            },
+          };
+        }
       })
-    )
+    );
+
     res.status(200).json({
       success: true,
-      reviews: enriched
-    })
+      reviews: enriched,
+    });
   } catch (error) {
     next(error);
   }
-}
+};
 
 export const updateReviewHandler = async (
   req: Request,
